@@ -7,20 +7,23 @@ export default function App() {
   const [data, setData] = useState();
   const [name, setName] = useState("");
 
-  const fetchData = () => {
+  const fetchData =  () => {
+
     setIsLoading(true);
     fetch("https://dummy.restapiexample.com/api/v1/create", {
       method: "POST",
 
       // Adding body or contents to send
-      body: JSON.stringify({})
+      body: JSON.stringify({
+        name
+      })
     })
       .then((res) => {
         res
           .json()
-          .then((res) => {
+          .then((res2) => {
             setIsLoading(false);
-            setData(res.status);
+            setData(res2.status);
           })
           .catch((err) => {
             setIsLoading(false);
@@ -44,7 +47,7 @@ export default function App() {
           setName(e.target.value);
         }}
       />
-      <button onClick={() => fetchData()}>Submit Form</button>
+      <button disabled={isLoading} onClick={() => fetchData()}>Submit Form</button>
     </div>
   );
 }
