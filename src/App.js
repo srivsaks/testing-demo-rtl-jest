@@ -1,25 +1,50 @@
-import logo from './logo.svg';
+
+import { useState } from "react";
 import './App.css';
 
-function App() {
+export default function App() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState();
+  const [name, setName] = useState("");
+
+  const fetchData = () => {
+    setIsLoading(true);
+    fetch("https://dummy.restapiexample.com/api/v1/create", {
+      method: "POST",
+
+      // Adding body or contents to send
+      body: JSON.stringify({})
+    })
+      .then((res) => {
+        res
+          .json()
+          .then((res) => {
+            setIsLoading(false);
+            setData(res.status);
+          })
+          .catch((err) => {
+            setIsLoading(false);
+            setData(err.message);
+          });
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setData(err.message);
+      });
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {isLoading && <div className="loading">Loading data...</div>}
+      {data && <div className="response">{data}</div>}
+      <input
+        className="name"
+        value={name}
+        onInput={(e) => {
+          setName(e.target.value);
+        }}
+      />
+      <button onClick={() => fetchData()}>Submit Form</button>
     </div>
   );
 }
-
-export default App;
