@@ -100,10 +100,8 @@ describe("On Button Click", () => {
     });
 
     expect(buttonElement).toBeEnabled();
-      expect(loadingEle).not.toBeInTheDocument();
-      expect(container.firstElementChild.children[0].innerHTML).toEqual(
-        "success"
-      );
+    expect(loadingEle).not.toBeInTheDocument();
+    expect(screen.queryByText("success")).toBeInTheDocument();
 
     global.fetch.mockClear();
     delete global.fetch;
@@ -150,13 +148,9 @@ describe("On Button Click", () => {
     });
 
     expect(buttonElement).toBeEnabled();
-      expect(
-        container.firstElementChild.firstChild.classList.contains("response")
-      );
-      expect(container.firstElementChild.firstChild.innerHTML).toEqual(
-        "error occurred"
-      );
-
+    expect(screen.queryByText("error occurred")).toBeInTheDocument();
+    expect(screen.queryByText("Loading data...")).not.toBeInTheDocument();
+    
     global.fetch.mockClear();
     delete global.fetch;
   });
@@ -194,7 +188,7 @@ describe("On Button Click", () => {
     fireEvent.click(buttonElement);
 
     expect(buttonElement).toBeDisabled();
-    
+
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading data...")
     );
@@ -204,9 +198,8 @@ describe("On Button Click", () => {
     });
 
     expect(buttonElement).toBeEnabled();
-      expect(container.firstElementChild.firstChild.innerHTML).toEqual(
-        "error occurred again"
-      );
+    expect(screen.queryByText("error occurred again")).toBeInTheDocument();
+    expect(screen.queryByText("Loading data...")).not.toBeInTheDocument();
 
     global.fetch.mockClear();
     delete global.fetch;
