@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor,waitForElementToBeRemoved } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import App from "./App";
 
 describe("Inital render", () => {
@@ -15,7 +21,7 @@ describe("Inital render", () => {
     const loadingEle = screen.queryByText("Loading data...");
     expect(loadingEle).not.toBeInTheDocument();
 
-    expect(container.firstChild.classList.contains("name"));
+    expect(container.firstChild.firstChild.classList.contains("name"));
   });
 });
 
@@ -47,7 +53,6 @@ describe("On Input", () => {
 });
 
 describe("On Button Click", () => {
-  
   it("Tests button click with API success", async () => {
     function setupFetchStub() {
       return function fetchStub(_url) {
@@ -84,30 +89,26 @@ describe("On Button Click", () => {
 
     fireEvent.click(buttonElement);
 
-    await waitForElementToBeRemoved(() =>screen.queryByText("Loading data..."));
-    await waitFor(async () => {
-      // fireEvent.click(buttonElement);
-      expect(buttonElement).toBeEnabled();
-      expect(loadingEle).not.toBeInTheDocument();
-      expect(container.firstElementChild.children[0].innerHTML).toEqual("success")
-    });
+    expect(buttonElement).toBeDisabled();
 
-    // const newDataEle=await screen.queryByText("sucess");
-
-   // expect(buttonElement).toBeEnabled()
-  //  expect(container.firstElementChild.children[0].innerHTML).toEqual("success")
-   /*expect(buttonElement).toBeEnabled()
-    console.log(dataEle);
-    expect(container.firstChild.classList.contains("response"));
-    expect(container.firstElementChild.children[0].innerHTML).toEqual(
-      "success"
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Loading data...")
     );
 
-    expect(buttonElement).toBeEnabled();*/
+    await waitFor(async () => {
+      screen.getByText("success");
+    });
+
+    expect(buttonElement).toBeEnabled();
+      expect(loadingEle).not.toBeInTheDocument();
+      expect(container.firstElementChild.children[0].innerHTML).toEqual(
+        "success"
+      );
+
     global.fetch.mockClear();
-    delete global.fetch
+    delete global.fetch;
   });
-  
+
   it("Tests button click with API failiure", async () => {
     function setupFetchStub(data) {
       return function fetchStub(_url) {
@@ -118,7 +119,9 @@ describe("On Button Click", () => {
     }
     const fakeData = { message: "error occurred" };
     global.fetch = jest.fn().mockImplementationOnce(setupFetchStub(fakeData));
-    jest.spyOn(global, "fetch").mockImplementationOnce(setupFetchStub(fakeData));
+    jest
+      .spyOn(global, "fetch")
+      .mockImplementationOnce(setupFetchStub(fakeData));
 
     const { container } = render(<App />);
 
@@ -136,25 +139,26 @@ describe("On Button Click", () => {
 
     fireEvent.click(buttonElement);
 
-    await waitForElementToBeRemoved(() =>screen.queryByText("Loading data..."));
-    await waitFor(async () => {
-       expect(buttonElement).toBeEnabled()
-    expect(container.firstChild.classList.contains("response"));
-    expect(container.firstElementChild.firstChild.innerHTML).toEqual(
-      "error occurred"
+    expect(buttonElement).toBeDisabled();
+
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Loading data...")
     );
-      // expect(container.firstChild.textContent).toEqual("success");
+
+    await waitFor(async () => {
+      screen.getByText("error occurred");
     });
 
-    /*expect(buttonElement).toBeEnabled()
-    expect(container.firstChild.classList.contains("response"));
-    expect(container.firstElementChild.firstChild.innerHTML).toEqual(
-      "error occurred"
-    );*/
+    expect(buttonElement).toBeEnabled();
+      expect(
+        container.firstElementChild.firstChild.classList.contains("response")
+      );
+      expect(container.firstElementChild.firstChild.innerHTML).toEqual(
+        "error occurred"
+      );
 
-    //expect(container.firstChild.textContent).toEqual("success");
     global.fetch.mockClear();
-    delete global.fetch
+    delete global.fetch;
   });
 
   it("Tests button click with API failiure from json object", async () => {
@@ -189,28 +193,22 @@ describe("On Button Click", () => {
 
     fireEvent.click(buttonElement);
 
-    await waitForElementToBeRemoved(() =>screen.queryByText("Loading data..."));
+    expect(buttonElement).toBeDisabled();
+    
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Loading data...")
+    );
+
     await waitFor(async () => {
-      expect(buttonElement).toBeEnabled()
-      // fireEvent.click(buttonElement);
-      // expect(buttonElement).toBeDisabled();
+      screen.getByText("error occurred again");
+    });
+
+    expect(buttonElement).toBeEnabled();
       expect(container.firstElementChild.firstChild.innerHTML).toEqual(
         "error occurred again"
       );
-      /*expect(container.firstElementChild.firstChild.innerHTML).toEqual(
-        "Loading data..."
-      );*/
-    });
-
-    /*expect(container.firstElementChild.firstChild.innerHTML).toEqual(
-      "error occurred again"
-    );
-    expect(buttonElement).toBeEnabled();
-    expect(container.firstChild.classList.contains("response"));*/
 
     global.fetch.mockClear();
-    delete global.fetch
+    delete global.fetch;
   });
-
-  
 });
