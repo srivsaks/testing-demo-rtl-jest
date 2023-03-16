@@ -114,13 +114,14 @@ describe("On Button Click", () => {
     expect(buttonElement).toBeDisabled();
 
     await waitForElementToBeRemoved(() =>
-      screen.queryByText("Loading data..."),
+      screen.queryByText("Loading data...")
     );
 
     await waitFor(async () => {
       screen.getByText("success");
     });
 
+    expect(global.fetch).toHaveBeenCalledTimes(1);
     expect(buttonElement).toBeEnabled();
     expect(loadingEle).not.toBeInTheDocument();
     expect(screen.getByText("success")).toBeInTheDocument();
@@ -162,7 +163,7 @@ describe("On Button Click", () => {
     expect(buttonElement).toBeDisabled();
 
     await waitForElementToBeRemoved(() =>
-      screen.queryByText("Loading data..."),
+      screen.queryByText("Loading data...")
     );
 
     await waitFor(async () => {
@@ -170,6 +171,7 @@ describe("On Button Click", () => {
     });
 
     expect(buttonElement).toBeEnabled();
+    expect(global.fetch).toHaveBeenCalledTimes(1);
     expect(screen.getByText("error occurred")).toBeInTheDocument();
     expect(screen.queryByText("Loading data...")).not.toBeInTheDocument();
 
@@ -214,7 +216,7 @@ describe("On Button Click", () => {
     expect(buttonElement).toBeDisabled();
 
     await waitForElementToBeRemoved(() =>
-      screen.queryByText("Loading data..."),
+      screen.queryByText("Loading data...")
     );
 
     await waitFor(async () => {
@@ -222,6 +224,7 @@ describe("On Button Click", () => {
     });
 
     expect(buttonElement).toBeEnabled();
+    expect(global.fetch).toHaveBeenCalledTimes(1);
     expect(screen.getByText("error occurred again")).toBeInTheDocument();
     expect(screen.queryByText("Loading data...")).not.toBeInTheDocument();
 

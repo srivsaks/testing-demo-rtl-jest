@@ -10,6 +10,7 @@ export default function App() {
   const fetchData =  () => {
 
     setIsLoading(true);
+    setData("")
     fetch("https://dummy.restapiexample.com/api/v1/create", {
       method: "POST",
 
