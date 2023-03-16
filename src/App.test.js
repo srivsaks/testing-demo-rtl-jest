@@ -8,47 +8,71 @@ import {
 import App from "./App";
 
 describe("Inital render", () => {
-  it("Tests intial data", () => {
-    const { container } = render(<App />);
+  describe("It renders initial data", () => {
+    it("Should render the submit button in the DOM and should have name class", () => {
+      render(<App />);
 
-    const buttonElement = screen.getByText("Submit Form");
-    expect(buttonElement).toBeInTheDocument();
-    expect(buttonElement).toBeEnabled();
+      const buttonElement = screen.getByText("Submit Form");
+      expect(buttonElement).toBeInTheDocument();
+      expect(buttonElement).toBeEnabled();
 
-    const inputText = screen.getByRole("textbox");
-    expect(inputText).toBeInTheDocument();
+      const inputContainer = screen.getByTestId("input-name");
+      expect(inputContainer).toHaveClass("name");
+    });
 
-    const loadingEle = screen.queryByText("Loading data...");
-    expect(loadingEle).not.toBeInTheDocument();
+    it("Should render the input box in the DOM", () => {
+      render(<App />);
 
-    expect(container.firstChild.firstChild.classList.contains("name"));
+      const inputText = screen.getByRole("textbox");
+      expect(inputText).toBeInTheDocument();
+    });
+
+    it("Should not render loading text", () => {
+      render(<App />);
+      const loadingEle = screen.queryByText("Loading data...");
+      expect(loadingEle).not.toBeInTheDocument();
+    });
   });
 });
 
 describe("On Input", () => {
-  it("Tests on Input event", () => {
-    const { container } = render(<App />);
+  describe("On input event on textbox", () => {
+    it("Should have required elements in the DOM", () => {
+      render(<App />);
 
-    const buttonElement = screen.getByText("Submit Form");
-    expect(buttonElement).toBeInTheDocument();
-    expect(buttonElement).toBeEnabled();
+      const buttonElement = screen.getByText("Submit Form");
+      expect(buttonElement).toBeInTheDocument();
+      expect(buttonElement).toBeEnabled();
 
-    const inputText = screen.getByRole("textbox");
-    expect(inputText).toBeInTheDocument();
-    expect(inputText).toHaveValue("");
+      const inputText = screen.getByRole("textbox");
+      expect(inputText).toBeInTheDocument();
+      expect(inputText).toHaveValue("");
 
-    const loadingEle = screen.queryByText("Loading data...");
-    expect(loadingEle).not.toBeInTheDocument();
+      const loadingEle = screen.queryByText("Loading data...");
+      expect(loadingEle).not.toBeInTheDocument();
 
-    expect(container.firstChild.classList.contains("name"));
+      expect(inputText).toHaveClass("name");
+    });
 
-    fireEvent.input(inputText, { target: { value: "foo" } });
+    it("Should update the value in the input element", () => {
+      render(<App />);
+      const buttonElement = screen.getByText("Submit Form");
+      const inputText = screen.getByRole("textbox");
+      const loadingEle = screen.queryByText("Loading data...");
 
-    expect(buttonElement).toBeEnabled();
-    expect(buttonElement).toBeInTheDocument();
-    expect(container.firstChild.classList.contains("name"));
-    expect(loadingEle).not.toBeInTheDocument();
-    expect(inputText).toHaveValue("foo");
+      /**
+       * Firing input change event
+       */
+      fireEvent.input(inputText, { target: { value: "foo" } });
+
+      expect(buttonElement).toBeEnabled();
+      expect(buttonElement).toBeInTheDocument();
+
+      expect(inputText).toHaveClass("name");
+
+      expect(loadingEle).not.toBeInTheDocument();
+      expect(inputText).toHaveValue("foo");
+    });
   });
 });
 
@@ -70,7 +94,7 @@ describe("On Button Click", () => {
     global.fetch = jest.fn().mockImplementationOnce(setupFetchStub());
     jest.spyOn(global, "fetch").mockImplementationOnce(setupFetchStub());
 
-    const { container } = render(<App />);
+    render(<App />);
 
     const buttonElement = screen.getByText("Submit Form");
     expect(buttonElement).toBeInTheDocument();
@@ -85,14 +109,12 @@ describe("On Button Click", () => {
     const dataEle = screen.queryByText("success");
     expect(dataEle).not.toBeInTheDocument();
 
-    expect(container.firstChild.firstChild.classList.contains("name"));
-
     fireEvent.click(buttonElement);
 
     expect(buttonElement).toBeDisabled();
 
     await waitForElementToBeRemoved(() =>
-      screen.queryByText("Loading data...")
+      screen.queryByText("Loading data..."),
     );
 
     await waitFor(async () => {
@@ -101,7 +123,7 @@ describe("On Button Click", () => {
 
     expect(buttonElement).toBeEnabled();
     expect(loadingEle).not.toBeInTheDocument();
-    expect(screen.queryByText("success")).toBeInTheDocument();
+    expect(screen.getByText("success")).toBeInTheDocument();
 
     global.fetch.mockClear();
     delete global.fetch;
@@ -133,14 +155,14 @@ describe("On Button Click", () => {
     const loadingEle = screen.queryByText("Loading data...");
     expect(loadingEle).not.toBeInTheDocument();
 
-    expect(container.firstChild.classList.contains("name"));
+    expect(inputText).toHaveClass("name");
 
     fireEvent.click(buttonElement);
 
     expect(buttonElement).toBeDisabled();
 
     await waitForElementToBeRemoved(() =>
-      screen.queryByText("Loading data...")
+      screen.queryByText("Loading data..."),
     );
 
     await waitFor(async () => {
@@ -148,9 +170,9 @@ describe("On Button Click", () => {
     });
 
     expect(buttonElement).toBeEnabled();
-    expect(screen.queryByText("error occurred")).toBeInTheDocument();
+    expect(screen.getByText("error occurred")).toBeInTheDocument();
     expect(screen.queryByText("Loading data...")).not.toBeInTheDocument();
-    
+
     global.fetch.mockClear();
     delete global.fetch;
   });
@@ -171,7 +193,7 @@ describe("On Button Click", () => {
     global.fetch = jest.fn().mockImplementationOnce(setupFetchStub());
     jest.spyOn(global, "fetch").mockImplementationOnce(setupFetchStub());
 
-    const { container } = render(<App />);
+    render(<App />);
 
     const buttonElement = screen.getByText("Submit Form");
     expect(buttonElement).toBeInTheDocument();
@@ -183,14 +205,16 @@ describe("On Button Click", () => {
     const loadingEle = screen.queryByText("Loading data...");
     expect(loadingEle).not.toBeInTheDocument();
 
-    expect(container.firstChild.classList.contains("name"));
+    expect(inputText).toHaveClass("name");
 
+    /**
+     * Fire button click events
+     */
     fireEvent.click(buttonElement);
-
     expect(buttonElement).toBeDisabled();
 
     await waitForElementToBeRemoved(() =>
-      screen.queryByText("Loading data...")
+      screen.queryByText("Loading data..."),
     );
 
     await waitFor(async () => {
@@ -198,7 +222,7 @@ describe("On Button Click", () => {
     });
 
     expect(buttonElement).toBeEnabled();
-    expect(screen.queryByText("error occurred again")).toBeInTheDocument();
+    expect(screen.getByText("error occurred again")).toBeInTheDocument();
     expect(screen.queryByText("Loading data...")).not.toBeInTheDocument();
 
     global.fetch.mockClear();
