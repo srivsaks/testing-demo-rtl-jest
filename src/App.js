@@ -43,6 +43,7 @@ export default function App() {
       <input
         className="name"
         value={name}
+        data-testid="input-name"
         onInput={(e) => {
           setName(e.target.value);
         }}
